@@ -5,6 +5,7 @@ using UnityEngine;
 public class CharacterSelectionScript : MonoBehaviour
 {
     public Player player;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -19,6 +20,7 @@ public class CharacterSelectionScript : MonoBehaviour
 
     public void SelectCharacter(int index)
     {
+      
         UiManager.Instance.ShowHideCharacterSelectionScreen(false);
         UiManager.Instance.ShowHideWeaponSelectionScreen(true);
         player.HairsParent = player.HairsParentList[index];
