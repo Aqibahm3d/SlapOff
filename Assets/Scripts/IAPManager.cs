@@ -3,8 +3,9 @@ using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
 
-public class IAPManager : MonoBehaviour, IStoreListener
+public class IAPManager : MonoBehaviour, IDetailedStoreListener, IStoreListener
 {
     public static IAPManager Instance;
     private IStoreController storeController;
@@ -16,7 +17,7 @@ public class IAPManager : MonoBehaviour, IStoreListener
     public List<GameObject> weaponButtons;
     public List<Text> weaponPriceTexts;
     public List<GameObject> weaponLocks;
-
+    public Action onInitializedSuccess;
     void Awake()
     {
         if (Instance == null)
@@ -25,14 +26,31 @@ public class IAPManager : MonoBehaviour, IStoreListener
 
     void Start()
     {
-        InitializePurchasing();
+        // InitializePurchasing();
+        Initialize_Call();
     }
-
-    public void InitializePurchasing()
+    public void Initialize_Call()
+    {
+        onInitializedSuccess = InitializePurchasing;
+        // If we haven't set up the Unity Purchasing reference
+        if (storeController == null)
+        {
+            // Begin to configure our connection to Purchasing
+            InitializePurchasing();
+        }
+    }
+            public void InitializePurchasing()
     {
         if (storeController != null) return;
 
+        //var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
         var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
+        //builder.Configure<IGooglePlayConfiguration>().SetServiceDisconnectAtInitializeListener(() => {
+
+        //    Debug.LogError("Unable to connect to the Google Play Billing service. " +
+        //        "User may not have a Google account on their device.");
+
+        //});
 
         foreach (string id in weaponProductIDs)
             builder.AddProduct(id, ProductType.NonConsumable);
@@ -118,4 +136,17 @@ public class IAPManager : MonoBehaviour, IStoreListener
 
     public void OnPurchaseFailed(Product product, PurchaseFailureReason failureReason) =>
         Debug.LogError($"Purchase failed: {product.definition.id}, Reason: {failureReason}");
+
+    public void OnPurchaseFailed(Product product, PurchaseFailureDescription failureDescription)
+    {
+        //throw new NotImplementedException();
+        Debug.Log(product+" " + failureDescription);
+
+    }
+
+
+
+
+
+
 }
